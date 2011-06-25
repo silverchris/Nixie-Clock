@@ -21,7 +21,7 @@ int main(void){
     TRISA = 0;
     PORTF = 0x7E;
     enable_uart();
-    //enable_gps();
+    enable_gps();
     enable_uart();
     enable_PWM();
 	clockstart();

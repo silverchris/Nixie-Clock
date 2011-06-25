@@ -42,11 +42,14 @@ typedef unsigned long int time_s;
 #define PWM_DUTY_ADDR 0x7FFC04
 #define TZ 0x7FFC06
 #define TZ_DST 0x7FFC08
-#define TZ_OBSERVES_DST 0x7FFC0A
-#define TZ_DST_START_MSB 0x7FFC0C
-#define TZ_DST_START_LSB 0x7FFC0E
-#define TZ_DST_END_MSB 0x7FFC10
-#define TZ_DST_END_LSB 0x7FFC12
+#define TZ_START_WEEKDAY 0x7FFC0A
+#define TZ_START_DAY_OCCURRENCE 0x7FFC0C
+#define TZ_START_MONTH 0x7FFC0E
+#define TZ_START_HOUR 0x7FFC10
+#define TZ_END_WEEKDAY 0x7FFC12
+#define TZ_END_DAY_OCCURRENCE 0x7FFC14
+#define TZ_END_MONTH 0x7FFC16
+#define TZ_END_HOUR 0x7FFC18
 
 #define GPIO1 PORTDbits.RD2
 #define GPIO2 PORTDbits.RD3
@@ -98,7 +101,9 @@ pt2Func get_command(const char * name);
 void execute_command(char *command_string);
 void help(char *out_buf, char *modeptr1, char *inputptr);
 
+/*Timezone Function prototypes*/
 time_s calc_dst_date(int year,int month,int week_day,int inc, int hour);
+void set_dst_start_end(void);
 
 /*Calendar Function Prototypes*/
 int day(time_s second);

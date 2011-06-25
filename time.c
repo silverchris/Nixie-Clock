@@ -8,6 +8,9 @@
 unsigned long bres;
 time_s seconds; // Following the convention, this holds our seconds
 const time_s *timeptr = &seconds;
+extern int dst;
+extern time_s dst_start;
+extern time_s dst_end;
 
 void clockstart(void){
   T1CON = 0;           //Clear the settings of Timer1
@@ -28,6 +31,15 @@ void __attribute__((no_auto_psv))__attribute__((__interrupt__)) _T1Interrupt(voi
   if(bres >= FCY){     // if reached 1 second!
     bres -= FCY;        // subtract 1 second, retain error
     seconds++;
+  	if((seconds%3600)==0){
+	  	set_dst_start_end();
+	}
+	if(seconds>=dst_start){
+		dst = 1;
+	}
+	if(seconds>=dst_end){
+		dst = 0;
+	}
   }
 }
 
@@ -77,6 +89,7 @@ void time_commands(char *out_buf, char *modeptr1, char *inputptr){
 			datetime(bufptr,seconds);
 			strcat(out_buf,"Time Set to: ");
 			strcat(out_buf,buf);
+			set_dst_start_end();
 		}
 	}
 }
