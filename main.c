@@ -2,6 +2,7 @@
 #include "main.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 _FOSC(CSW_FSCM_OFF & XT_PLL16);
 _FWDT(WDT_OFF);                 //Turn off the Watch-Dog Timer.
 _FBORPOR(MCLR_EN & PWRT_OFF);   //Enable MCLR reset pin and turn off the
@@ -10,7 +11,8 @@ _FGS(CODE_PROT_OFF);            //Disable Code Protection
 
 extern char uartrxbuffer[120];
 extern char uarttextbuffer[120];
-
+extern time_s seconds;
+extern time_s *timeptr;
 int main(void){
 	eeprom_first_run();
 	ADPCFG = 0xFFFF;
@@ -19,6 +21,8 @@ int main(void){
     TRISA = 0;
     PORTF = 0x7E;
     enable_uart();
+    //enable_gps();
+    enable_uart();
     enable_PWM();
 	clockstart();
 	clockrefreshstart();
@@ -26,7 +30,7 @@ int main(void){
 	uartbuffer(VERSION);
  	uartbuffer("\r\n>");
 	while(1){
-	
+	Nop();
 	}
 }
 

@@ -1,14 +1,13 @@
 #include <p30f3014.h>
 #include "main.h"
 #include <string.h>
-#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 
 unsigned long bres;
-time_t seconds; // Following the convention, this holds our seconds
-time_t *timeptr = &seconds;
+time_s seconds; // Following the convention, this holds our seconds
+const time_s *timeptr = &seconds;
 
 void clockstart(void){
   T1CON = 0;           //Clear the settings of Timer1
@@ -39,37 +38,45 @@ void time_commands(char *out_buf, char *modeptr1, char *inputptr){
 	//char temp[10];
 	//strcpy(temp,modeptr1);
 	if (strcmp(modeptr1,"get") == 0){
-		strftime(out_buf,20,"Time is %H:%M:%S\r\n",gmtime(timeptr));
+			char buf[24] = "";
+			char *bufptr = &buf[0];
+			datetime(bufptr,seconds);
+			strcat(out_buf,"Time is: ");
+			strcat(out_buf,buf);
 		}
 	if (strcmp(modeptr1,"set") == 0){
-		//convert date from YYYY/MM/DD-HH:MM:SS into unix time
+		//convert date from YYYY/MM/DD-HH:MM:SS into our time
 		if(strlen(inputptr) != 19){
 			strcpy(out_buf,"You have tried to set a invalid Date/Time\r\n");
 		}
 		else{
 			char timestring[20];
 			strcpy(timestring,inputptr);
-			struct tm temptime;
 			char *p;
 			p = strtok(timestring,"/");
-			temptime.tm_year = (int)(atol(p)-(long)1900);
+			
+			int year = atoi(p);
 
 			p = strtok(NULL, "/");
-			temptime.tm_mon = atoi(p)-1;
+			int month = atoi(p);
 
 			p = strtok(NULL, "-");
-			temptime.tm_mday = atoi(p);
+			int day = atoi(p);
 
 			p = strtok(NULL, ":");
-			temptime.tm_hour = atoi(p);
+			int hour = atoi(p);
 
 			p = strtok(NULL, ":");
-			temptime.tm_min = atoi(p);
+			int minute = atoi(p);
 
 			p = strtok(NULL, ":");
-			temptime.tm_sec = atoi(p);
-			seconds = mktime(&temptime);
-			strftime(out_buf,40,"Time Set To %Y/%m/%d %H:%M:%S\r\n",&temptime);
+			int sec = atoi(p);
+			char buf[24] = "";
+			char *bufptr = &buf[0];
+			seconds = mktime(year,month,day,hour,minute,sec);
+			datetime(bufptr,seconds);
+			strcat(out_buf,"Time Set to: ");
+			strcat(out_buf,buf);
 		}
 	}
 }

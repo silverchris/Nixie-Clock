@@ -1,14 +1,25 @@
 #include <p30f3014.h>
 #include "main.h"
 #include <libpic30.h>
+
 int pwm_freq;
 int pwm_duty;
+
+extern int tz;
+extern int tz_dst;
+extern int tz_observes_dst;
+extern long int tz_dst_start;
+extern long int tz_dst_end;
 
 void eeprom_first_run(void){
 	if(read_eeprom(FIRSTRUN_ADDR) == 0xFFFF){
 		write_eeprom(FIRSTRUN_ADDR, 0x0);
 		write_eeprom(PWM_FREQ_ADDR, 0x007c);
 		write_eeprom(PWM_DUTY_ADDR, 50);
+		write_eeprom(TZ, 9);
+		write_eeprom(TZ_DST, 10);
+		write_eeprom(TZ_OBSERVES_DST, 1);
+		
 		load_eeprom_data();
 	}
 	else{

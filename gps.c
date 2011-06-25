@@ -3,13 +3,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <UART.h>
-#include <time.h>
 #include <stdlib.h>
 
 char gpsrxbuffer[81];
 char *gpsrxptr = &gpsrxbuffer[0];
-extern time_t seconds;
-extern time_t *timeptr;
+extern time_s seconds;
+extern time_s *timeptr;
 void enable_gps(void){
 	*gpsrxptr = '\0';
 	#define UMODEvalue UART_EN & UART_IDLE_CON &\
@@ -57,12 +56,10 @@ void __attribute__((no_auto_psv))__attribute__((__interrupt__)) _U2RXInterrupt(v
 				 timeptr++;
 				}
 				*timeptr = '\0';
-				struct tm *temptime;
-				temptime = gmtime(&seconds);
-				(*temptime).tm_hour = atoi(hour);
-				(*temptime).tm_min = atoi(minutes);
-				(*temptime).tm_sec = atoi(secs);
-				seconds = mktime(temptime);
+				time_s day = seconds%86400;
+				time_s newday = mktime(0,0,0,atoi(hour),atoi(minutes),atoi(secs));
+				seconds = seconds-day;
+				seconds = seconds+newday;
 			}
 		}
 		else{

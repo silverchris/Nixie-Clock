@@ -1,11 +1,11 @@
 #include <p30f3014.h>
 #include "main.h"
-#include <time.h>
 
 
-extern time_t seconds;
-extern time_t *timeptr;
+extern time_s seconds;
+extern time_s *timeptr;
 unsigned int displaystate;  //Variable for the statemachine
+int disp_state = 0;
 void clockrefreshstart(void){
   T2CON = 0;           //Clear the settings of Timer1
   TMR2 = 0;            //Clear Timer1
@@ -56,6 +56,22 @@ void Kselect(num){
 void __attribute__((no_auto_psv))__attribute__((__interrupt__)) _T2Interrupt(void){
 		/* This Function Refreshs the display */
 		IFS0bits.T2IF = 0;
+		if(disp_state == 0){
+			time_s day = seconds%86400;
+			display(day/3600,(day%3600)/60,day%60);
+		}
+		if(disp_state == 1){
+			time_s day = seconds%86400;
+			display(day/3600,(day%3600)/60,day%60);
+		}
+		if(disp_state == 2){
+			/*struct tm *temptime;
+			temptime = gmtime(&seconds);
+			display(((*temptime).tm_year)%100,((*temptime).tm_mon)+1,(*temptime).tm_mday);*/
+		}	
+}
+
+void display(int hours, int minutes, int second){
 		PORTF = 0xFFFF;
 		K0 = 0;
 		K1 = 0;
@@ -67,41 +83,40 @@ void __attribute__((no_auto_psv))__attribute__((__interrupt__)) _T2Interrupt(voi
 		K7 = 0;
 		K8 = 0;
 		K9 = 0;
-		long int day = ((seconds%86400));
 		Nop();
 		switch(displaystate){
 			case HourMSDstate: //Do the first hour Digit
-				Kselect((day/3600)/10); //Set the Cathode
+				Kselect(hours/10); //Set the Cathode
 				A1 = 0;
 				Nop();
 				displaystate++; //Next time this statement executes do the next state
 				break;
 			case HourLSDstate:
-				Kselect((day/3600)%10);
+				Kselect(hours%10);
 				A2 = 0;
 				Nop();
 				displaystate++;
 				break;
 			case MinuteMSDstate:			
-				Kselect(((day%3600)/60)/10);
+				Kselect(minutes/10);
 				A3 = 0;
 				Nop();
 				displaystate++;
 				break;
 			case MinuteLSDstate:
-				Kselect(((day%3600)/60)%10);
+				Kselect(minutes%10);
 				A4 = 0;
 				Nop();
 				displaystate++;
 				break;
 			case SecondMSDstate:
-				Kselect((day%60)/10);
+				Kselect(seconds/10);
 				A5 = 0;
 				Nop();
 				displaystate++;
 				break;
 			case SecondLSDstate:
-				Kselect((day%60)%10);
+				Kselect(seconds%10);
 				A6 = 0;
 				Nop();
 				displaystate = 0;

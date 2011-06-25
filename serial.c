@@ -47,7 +47,6 @@ void __attribute__((no_auto_psv))__attribute__((__interrupt__)) _U1RXInterrupt(v
 		if(running_command == 0){
 			if (received_char == 0x0D){
 				uartbuffer("\n");
-				//uartrxbuffer[strlen(uartrxbuffer)] = '\0';
 				running_command = 1;
 				execute_command(&uartrxbuffer[0]);
 				int count = strlen(uartrxbuffer);

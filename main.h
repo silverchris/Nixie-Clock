@@ -1,10 +1,13 @@
 #include <libpic30.h>
+
+typedef unsigned long int time_s;
 #define VERSION "0.1(Finding My Way)"
 #define FOSC 6000000 /* The External oscillator/clock speed, In this example 1Mhz */
 #define PLL 16 /* The PLL multiplier */
 #define FCY (FOSC*PLL)/4 /* The instruction clock rate, which is the Oscillator divded by 4 */
 #define TCY 1/FCY
 #define BRG (((FCY/57600)/16)-1)
+#define BRG2 (((FCY/4800)/16)-1)
 #define VINRATIO 7.8
 #define VOUTRATIO 44
 
@@ -37,6 +40,20 @@
 #define FIRSTRUN_ADDR 0x7FFC00
 #define PWM_FREQ_ADDR 0x7FFC02
 #define PWM_DUTY_ADDR 0x7FFC04
+#define TZ 0x7FFC06
+#define TZ_DST 0x7FFC08
+#define TZ_OBSERVES_DST 0x7FFC0A
+#define TZ_DST_START_MSB 0x7FFC0C
+#define TZ_DST_START_LSB 0x7FFC0E
+#define TZ_DST_END_MSB 0x7FFC10
+#define TZ_DST_END_LSB 0x7FFC12
+
+#define GPIO1 PORTDbits.RD2
+#define GPIO2 PORTDbits.RD3
+#define GPIO3 PORTDbits.RD8
+#define GPIO1_TRIS TRISDbits.TRISD2
+#define GPIO2_TRIS TRISDbits.TRISD3
+#define GPIO3_TRIS TRISDbits.TRISD8
 
 #define UART_ALTRX_ALTTX 0xFFE7 /* TO FIX MICROCHIPS EPIC INCLUDE FUCKUP THOSE FUCKERS*/
 
@@ -50,6 +67,7 @@ void time_commands(char *out_buf, char *mode, char *inputptr);
 
 /*Display Function Proto Types*/
 void clockrefreshstart(void);
+void display(int hours, int minutes, int second);
 
 /*PWM Function Prototypes*/
 void enable_PWM(void);
@@ -68,6 +86,9 @@ void uartbuffer(char string[30]);
 void U1TXInterrupt(void);
 void ui(char input);
 
+/*GPS function prototypes*/
+void enable_gps(void);
+
 /*ADC function Prototypes*/
 void enable_ADC(void);
 int get_adc_value(void);
@@ -77,3 +98,15 @@ pt2Func get_command(const char * name);
 void execute_command(char *command_string);
 void help(char *out_buf, char *modeptr1, char *inputptr);
 
+time_s calc_dst_date(int year,int month,int week_day,int inc, int hour);
+
+/*Calendar Function Prototypes*/
+int day(time_s second);
+int year(int days);
+int month(int days, int leap);
+int dayOfmonth(int days,int month, int leap);
+int dayOfweek(int y, int m, int d);
+int isLeapYear(int year);
+int dayOfyear(int days, int year);
+time_s mktime(int year,int month, int day,int hour,int minute, int second);
+void datetime(char *buffer, time_s time);
