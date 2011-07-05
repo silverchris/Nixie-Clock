@@ -23,12 +23,12 @@ typedef unsigned long int time_s;
 #define K8 PORTBbits.RB7  /* 0 Cathode */
 #define K9 PORTBbits.RB8  /* 0 Cathode */
 
-#define A1 PORTFbits.RF6 
-#define A2 PORTFbits.RF3
-#define A3 PORTFbits.RF2
-#define A4 PORTFbits.RF5
-#define A5 PORTFbits.RF4
-#define A6 PORTFbits.RF1
+#define A1 PORTFbits.RF1 
+#define A2 PORTFbits.RF0
+#define A3 PORTBbits.RB12
+#define A4 PORTBbits.RB11
+#define A5 PORTBbits.RB10
+#define A6 PORTBbits.RB9
 
 #define HourMSDstate 0  /* States for the state machine */
 #define HourLSDstate 1

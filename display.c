@@ -5,7 +5,12 @@
 extern time_s seconds;
 extern time_s *timeptr;
 unsigned int displaystate;  //Variable for the statemachine
-int disp_state = 0;
+int disp_state = 1;
+extern long tzones[40];
+extern int dst;
+extern int tz_dst;
+extern int tz;
+int test = 1;
 void clockrefreshstart(void){
   T2CON = 0;           //Clear the settings of Timer1
   TMR2 = 0;            //Clear Timer1
@@ -61,8 +66,14 @@ void __attribute__((no_auto_psv))__attribute__((__interrupt__)) _T2Interrupt(voi
 			display(day/3600,(day%3600)/60,day%60);
 		}
 		if(disp_state == 1){
-			time_s day = seconds%86400;
-			display(day/3600,(day%3600)/60,day%60);
+			if(dst){
+				time_s day = (seconds+tzones[tz_dst])%86400;
+				display(day/3600,(day%3600)/60,day%60);
+			}
+			else{
+				time_s day = (seconds+tzones[tz])%86400;
+				display(day/3600,(day%3600)/60,day%60);
+			}
 		}
 		if(disp_state == 2){
 			/*struct tm *temptime;
@@ -72,7 +83,12 @@ void __attribute__((no_auto_psv))__attribute__((__interrupt__)) _T2Interrupt(voi
 }
 
 void display(int hours, int minutes, int second){
-		PORTF = 0xFFFF;
+		A1 = 1;
+		A2 = 1;
+		A3 = 1;
+		A4 = 1;
+		A5 = 1;
+		A6 = 1;
 		K0 = 0;
 		K1 = 0;
 		K2 = 0;
@@ -86,37 +102,67 @@ void display(int hours, int minutes, int second){
 		Nop();
 		switch(displaystate){
 			case HourMSDstate: //Do the first hour Digit
-				Kselect(hours/10); //Set the Cathode
+				if (test==1){
+					Kselect(1); //Set the Cathode
+				}
+				else{
+					Kselect(hours/10); //Set the Cathode
+				}
 				A1 = 0;
 				Nop();
 				displaystate++; //Next time this statement executes do the next state
 				break;
 			case HourLSDstate:
-				Kselect(hours%10);
+				if (test){
+					Kselect(2); //Set the Cathode
+				}
+				else{
+					Kselect(hours%10);
+				}
 				A2 = 0;
 				Nop();
 				displaystate++;
 				break;
-			case MinuteMSDstate:			
-				Kselect(minutes/10);
+			case MinuteMSDstate:
+				if (test){
+					Kselect(3); //Set the Cathode
+				}
+				else{
+					Kselect(minutes/10);
+				}
 				A3 = 0;
 				Nop();
 				displaystate++;
 				break;
 			case MinuteLSDstate:
-				Kselect(minutes%10);
+				if (test){
+					Kselect(4); //Set the Cathode
+				}
+				else{
+					Kselect(minutes%10);
+				}
 				A4 = 0;
 				Nop();
 				displaystate++;
 				break;
 			case SecondMSDstate:
-				Kselect(seconds/10);
+				if (test){
+					Kselect(5); //Set the Cathode
+				}
+				else{
+					Kselect(seconds/10);
+				}
 				A5 = 0;
 				Nop();
 				displaystate++;
 				break;
 			case SecondLSDstate:
-				Kselect(seconds%10);
+				if (test){
+					Kselect(6); //Set the Cathode
+				}
+				else{
+					Kselect(seconds%10);
+				}
 				A6 = 0;
 				Nop();
 				displaystate = 0;
