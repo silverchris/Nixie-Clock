@@ -15,10 +15,6 @@ extern time_s seconds;
 extern time_s *timeptr;
 int main(void){
 	eeprom_first_run();
-	ADPCFG = 0xFFFF;
-	TRISF = 0;
-    TRISB = 0;
-    TRISA = 0;
     enable_gps();
     enable_uart();
     enable_PWM();

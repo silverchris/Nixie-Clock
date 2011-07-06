@@ -12,6 +12,11 @@ extern int tz_dst;
 extern int tz;
 int test = 1;
 void clockrefreshstart(void){
+	displaystate = 0;
+	ADPCFG = 0xFFFF;
+	TRISF = 0;
+    TRISB = 0;
+    TRISA = 0;
   T2CON = 0;           //Clear the settings of Timer1
   TMR2 = 0;            //Clear Timer1
   PR2 = (float)(0.000833/(1.0/(FCY)));
@@ -24,34 +29,34 @@ void clockrefreshstart(void){
 void Kselect(num){
   switch(num){
     case 0:
-      K0 = 1;
+      PORTA = 0xFFFF;
       break;
     case 1:
-      K1 = 1;
+      PORTB = PORTB|0b0000000000000001;
       break;    
     case 2:
-      K2 = 1;
+      PORTB = PORTB|0b0000000000000010;
       break;
     case 3:
-      K3 = 1;
+      PORTB = PORTB|0b0000000000000100;
       break;
     case 4:
-      K4 = 1;
+      PORTB = PORTB|0b0000000000001000;
       break;
     case 5:
-      K5 = 1;
+      PORTB = PORTB|0b0000000000010000;
       break;
     case 6:
-      K6 = 1;
+      PORTB = PORTB|0b0000000000100000;
       break;
     case 7:
-      K7 = 1;
+      PORTB = PORTB|0b0000000001000000;
       break;
     case 8:
-      K8 = 1;
+      PORTB = PORTB|0b0000000010000000;
       break;
     case 9:
-      K9 = 1;
+      PORTB = PORTB|0b0000000100000000;
       break;
   }
 }
@@ -83,6 +88,7 @@ void __attribute__((no_auto_psv))__attribute__((__interrupt__)) _T2Interrupt(voi
 }
 
 void display(int hours, int minutes, int second){
+		PORTA = 0x0000;
 		PORTB = 0b0001111000000000;
 		PORTF = PORTF|0x3;
 		//PORTF = temp;
