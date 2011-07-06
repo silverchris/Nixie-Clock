@@ -19,8 +19,6 @@ int main(void){
 	TRISF = 0;
     TRISB = 0;
     TRISA = 0;
-    PORTF = 0x7E;
-    enable_uart();
     enable_gps();
     enable_uart();
     enable_PWM();

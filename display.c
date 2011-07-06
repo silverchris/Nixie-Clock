@@ -16,7 +16,7 @@ void clockrefreshstart(void){
   TMR2 = 0;            //Clear Timer1
   PR2 = (float)(0.000833/(1.0/(FCY)));
   IEC0bits.T2IE = 1;   //Ene Timer1's interrupt
-  T2CONbits.TON = 1;  //Turn on Timer1abl
+  T2CONbits.TON = 1;  //Turn on Timer1
 }
 
 
@@ -83,22 +83,9 @@ void __attribute__((no_auto_psv))__attribute__((__interrupt__)) _T2Interrupt(voi
 }
 
 void display(int hours, int minutes, int second){
-		A1 = 1;
-		A2 = 1;
-		A3 = 1;
-		A4 = 1;
-		A5 = 1;
-		A6 = 1;
-		K0 = 0;
-		K1 = 0;
-		K2 = 0;
-		K3 = 0;
-		K4 = 0;
-		K5 = 0;
-		K6 = 0;
-		K7 = 0;
-		K8 = 0;
-		K9 = 0;
+		PORTB = 0b0001111000000000;
+		PORTF = PORTF|0x3;
+		//PORTF = temp;
 		Nop();
 		switch(displaystate){
 			case HourMSDstate: //Do the first hour Digit
@@ -108,7 +95,7 @@ void display(int hours, int minutes, int second){
 				else{
 					Kselect(hours/10); //Set the Cathode
 				}
-				A1 = 0;
+				PORTF = PORTF&0b1111111111111101;
 				Nop();
 				displaystate++; //Next time this statement executes do the next state
 				break;
@@ -119,7 +106,7 @@ void display(int hours, int minutes, int second){
 				else{
 					Kselect(hours%10);
 				}
-				A2 = 0;
+				PORTF = PORTF&0b1111111111111110;
 				Nop();
 				displaystate++;
 				break;
@@ -130,7 +117,7 @@ void display(int hours, int minutes, int second){
 				else{
 					Kselect(minutes/10);
 				}
-				A3 = 0;
+				PORTB = PORTB&0b1110111111111111;
 				Nop();
 				displaystate++;
 				break;
@@ -141,7 +128,7 @@ void display(int hours, int minutes, int second){
 				else{
 					Kselect(minutes%10);
 				}
-				A4 = 0;
+				PORTB = PORTB&0b1111011111111111;
 				Nop();
 				displaystate++;
 				break;
@@ -152,7 +139,7 @@ void display(int hours, int minutes, int second){
 				else{
 					Kselect(seconds/10);
 				}
-				A5 = 0;
+				PORTB=PORTB&0b1111101111111111;
 				Nop();
 				displaystate++;
 				break;
@@ -163,7 +150,7 @@ void display(int hours, int minutes, int second){
 				else{
 					Kselect(seconds%10);
 				}
-				A6 = 0;
+				PORTB=PORTB&0b1111110111111111;
 				Nop();
 				displaystate = 0;
 				break;
