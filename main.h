@@ -92,10 +92,6 @@ void ui(char input);
 /*GPS function prototypes*/
 void enable_gps(void);
 
-/*ADC function Prototypes*/
-void enable_ADC(void);
-int get_adc_value(void);
-
 /*Command Function Prototypes*/
 pt2Func get_command(const char * name);
 void execute_command(char *command_string);
